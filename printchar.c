@@ -1,24 +1,58 @@
+//-----------------------------------------------------
+// printchar - Output a character to matrix one or two
+//-----------------------------------------------------
+
 void printchar(int fd, int x, int chr) {
 
-        int i, y, z;
+        int i, y, z, odd;
         char buf[7], reg;
         uint8_t cmd[2];
         uint8_t matrix;
         if(fd<0) return;
-        reg = x % 2 ? 0x0e : 0x01;
-        matrix=0x61+x/2;
+
+        //Pick which driver chip is going to get the data,
+
+        if(x<2) matrix=0x61;
+        else if(x<4) matrix = 0x62;
+        else matrix = 0x63;
+
+        //Select the chosen chip
         ioctl(fd, I2C_SLAVE,matrix);
+
+        //Pick which display register is going to be
+        //written to
+
+        if((x % 2)==1) {
+                reg=0x0e;
+                odd=1;
+        }
+        else {
+                reg=0x01;
+                odd=0;
+        }
+
+        //If the character is out of printable range,
+        //ditch writing it.
+
         if(chr<33 || chr>126) return;
+
+        //Subtract 33 from the character value to
+        // give a base index into the font array
+
         chr=chr-33;
-        if (x % 2) {
+        
+        //Now load the bit pattern for the character into 
+        //the chosen display.
+        if (odd==1) {
                 // Odd numbered character out of the string
-                for (i = 0, y = 7; i < 7; i++, y--)
-                        buf[i] = 0;
+                // Reverse the bit pattern row by row.
 
-                for (i = 0; i < 8; i++)
-                        for (y = 0; y < 7; y++)
+                memset(buf,0,7);
+                for (i = 0; i < 8; i++) {
+                        for (y = 0; y < 7; y++) {
                                 buf[i] |= font[chr][y] & (1 << i) ? 1 << y : 0;
-
+                        }
+                }
                 for (i = 0; i < 7; i++) {
                         cmd[0]=reg+i;
                         cmd[1]=buf[i];
@@ -27,6 +61,7 @@ void printchar(int fd, int x, int chr) {
         }
         else {
                 // Even numbered character out of the string
+
                 for (i = 0; i < 7; i++) {
                         cmd[0]=reg+i;
                         cmd[1]=font[chr][i];
@@ -34,3 +69,4 @@ void printchar(int fd, int x, int chr) {
                 }
         }
 }
+
