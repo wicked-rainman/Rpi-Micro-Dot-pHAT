@@ -1,8 +1,9 @@
 //-------------------------------------------------------------
-// Code to write simple strings (maximum length of 6) to the
-// micro dot Phat
+// Code to write simple string (maximum length of 6) to the
+// micro dot Phat. Anything after the 6th char in the string
+// gets dropped.
 //
-// Results from i2cdetect -y 1
+// FYI Results from i2cdetect -y 1
 //     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
 //00:          -- -- -- -- -- -- -- -- -- -- -- -- --
 //10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -15,6 +16,8 @@
 //
 // Three IS31FL3730 chips, with two 5x7 LED arrays attached to
 // each (i.e, 6 led Matrix in all)..
+//
+// WR
 //-------------------------------------------------------------
 #include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
@@ -30,14 +33,16 @@
 int main() {
         int fd;
         fd = open("/dev/i2c-1", O_RDWR);
-        if(fd<0) {
-                fprintf(stderr,"Could not open the I2C device\n");
+        if(fd>=0) {
+        	reset(fd);
+		bright(fd,7);
+        	printstr(fd,"Wicked");
+		update(fd);
+        	close(fd);
+        	exit(EXIT_SUCCESS);
+	}
+	else {
+		fprintf(stderr,"Could not open the I2C device\n");
                 exit(EXIT_FAILURE);
-        }
-        reset(fd);
-	bright(fd,7);
-        printstr(fd,"Wicked");
-	update(fd);
-        close(fd);
-        exit(EXIT_SUCCESS);
+	}
 }
