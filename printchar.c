@@ -8,17 +8,10 @@ void printchar(int fd, int x, int chr) {
         reg = x % 2 ? 0x0e : 0x01;
         matrix=0x61+x/2;
         ioctl(fd, I2C_SLAVE,matrix);
-
-        switch (chr) {
-        case '\0':
-        case '\n':
-        case '\r':
-                return;
-        }
+        if(chr<33 || chr>126) return;
         chr=chr-33;
         if (x % 2) {
                 // Odd numbered character out of the string
-                /* flip */
                 for (i = 0, y = 7; i < 7; i++, y--)
                         buf[i] = 0;
 
