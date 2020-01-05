@@ -8,14 +8,14 @@ Provides the following:
 reset(int f_discriptor)
 Resets the display and puts it back into default mode.
 
-update(int f_discriptor)
-Updates the display with any characters that have been sent
+update(int f_discriptor) : Updates the display with any characters that have been sent
 
-bright(int f_discriptor, int display_current, int display_pwm)
-Sets the LED brightness of the display
 
-printstr(int f_discriptor, char *string)
-Sends a string to the display for printing
+bright(int f_discriptor, int display_current, int display_pwm) : Sets the LED brightness of the display
 
-printchar(int f_discriptor, int position, int char)
-Sends a character to one of the 6 matrix displays
+
+printstr(int f_discriptor, char *string) : Sends a string to the display for printing
+
+
+printchar(int f_discriptor, int position, int char)  Sends a character to one of the 6 matrix displays
+
