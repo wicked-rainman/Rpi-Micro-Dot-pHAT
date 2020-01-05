@@ -30,19 +30,24 @@
 #include <unistd.h>
 #include "funcs.h"
 
-int main() {
+int main(int argc, char **argv) {
         int fd;
         fd = open("/dev/i2c-1", O_RDWR);
         if(fd>=0) {
-        	reset(fd);
-		bright(fd,7);
-        	printstr(fd,"Wicked");
-		update(fd);
-        	close(fd);
-        	exit(EXIT_SUCCESS);
-	}
-	else {
-		fprintf(stderr,"Could not open the I2C device\n");
+                reset(fd);
+                bright(fd,4,7);
+                if(argc ==1) {
+                        printstr(fd,"Wicked");
+                }
+                else {
+                        printstr(fd,argv[1]);
+                }
+                update(fd);
+                close(fd);
+                exit(EXIT_SUCCESS);
+        }
+        else {
+                fprintf(stderr,"Could not open the I2C device\n");
                 exit(EXIT_FAILURE);
-	}
+        }
 }
