@@ -32,17 +32,24 @@
 
 int main(int argc, char **argv) {
         int fd;
+        //Open the display
         fd = open("/dev/i2c-1", O_RDWR);
         if(fd>=0) {
+                //Reset the display to it's default state.
                 reset(fd);
+                //Set LED brightness, pwm=4, current=7
                 bright(fd,4,7);
+                //If argument not suppled, write default string
                 if(argc ==1) {
                         printstr(fd,"Wicked");
                 }
+                //else write supplied string
                 else {
                         printstr(fd,argv[1]);
                 }
+                //Update the display
                 update(fd);
+                //Close the display
                 close(fd);
                 exit(EXIT_SUCCESS);
         }
